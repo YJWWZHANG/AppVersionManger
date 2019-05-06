@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mobile.token.mapper.TokenMapper">
+	<resultMap type="Token" id="tokenResultMap">
+		<id column="id" property="id" jdbcType="VARCHAR" />
+		<result column="username" property="username" jdbcType="VARCHAR" />
+		<result column="password" property="password" jdbcType="VARCHAR" />
+		<result column="tokenid" property="tokenid" jdbcType="VARCHAR" />
+		<result column="validtime" property="validtime" jdbcType="TIMESTAMP" />
+		<result column="islock" property="islock" jdbcType="NUMERIC" />
+		<result column="isbomb" property="isbomb" jdbcType="NUMERIC" />
+		<result column="updatetime" property="updatetime" jdbcType="TIMESTAMP" />
+		<result column="device" property="device" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="columns">id,username,password,tokenid,validtime,islock,isbomb,updatetime,device
+	</sql>
+
+	<select id="listAll" resultMap="tokenResultMap">
+		select * from mobile_token
+	</select>
+	
+	<select id="listAllAsc" resultMap="tokenResultMap">
+		select * from mobile_token
+	</select>
+	
+	<select id="listAllDesc" resultMap="tokenResultMap">
+		select * from mobile_token 
+		<if test="validtime!=null"> order by validtime desc</if>
+	</select>
+	
+	<select id="selectLastUseTime" resultMap="tokenResultMap" >
+		SELECT * FROM mobile_token WHERE updatetime IN (SELECT max(p.updatetime) FROM mobile_token  p group by username)
+		<if test="username!=null and username!='' "> AND username  = #{username}</if>
+	</select>
+	
+     <select id="selectMultiple" resultMap="tokenResultMap">
+		select * from mobile_token <include refid="dynamicWhere"></include>
+	</select>
+	
+     <select id="selectOne" resultMap="tokenResultMap">
+		select * from mobile_token
+		<include refid="dynamicWhere"></include>
+	</select>
+
+	<insert id="add" parameterType="Token">
+		insert into mobile_token (
+		<include refid="columns" />
+		) values
+		(#{id,jdbcType=VARCHAR},#{username,jdbcType=VARCHAR},#{password,jdbcType=VARCHAR},#{tokenid,jdbcType=VARCHAR},#{validtime,jdbcType=TIMESTAMP},#{islock,jdbcType=NUMERIC},#{isbomb,jdbcType=NUMERIC},#{updatetime,jdbcType=TIMESTAMP},#{device,jdbcType=VARCHAR})
+	</insert>
+	
+	<sql id="dynamicWhere">
+		<where>
+			<if test="id!=null and id!='' "> AND id = #{id,jdbcType=VARCHAR}</if>
+			<if test="username!=null and username!='' "> AND username  = #{username,jdbcType=VARCHAR}</if>
+			<if test="password!=null and password!='' "> AND password  = #{password,jdbcType=VARCHAR}</if>
+			<if test="tokenid!=null and tokenid!='' "> AND tokenid  = #{tokenid,jdbcType=VARCHAR}</if>
+			<if test="validtime!=null and validtime!='' "> AND validtime > #{validtime,jdbcType=TIMESTAMP}</if>
+			<if test="islock!=null and islock!='' "> AND islock  = #{islock,jdbcType=NUMERIC}</if>
+			<if test="isbomb!=null and isbomb!='' "> AND islock  = #{isbomb,jdbcType=NUMERIC}</if>
+			<if test="updatetime!=null and updatetime!='' "> AND updatetime  > #{updatetime,jdbcType=TIMESTAMP}</if>
+			<if test="device!=null and device!='' "> AND device  = #{device,jdbcType=VARCHAR}</if>
+			
+		</where>
+	</sql>
+
+  <update id="update" parameterType="Token">
+	update mobile_token
+	<set>
+		<if test="id!=null and id!='' "> id = #{id,jdbcType=VARCHAR},</if>
+		<if test="username!=null and username!='' "> username = #{username,jdbcType=VARCHAR},</if>
+		<if test="password!=null and password!='' "> password = #{password,jdbcType=VARCHAR},</if>
+		<if test="tokenid!=null and tokenid!='' "> tokenid = #{tokenid,jdbcType=VARCHAR},</if>
+		<if test="validtime!=null and validtime!=''"> validtime = #{validtime,jdbcType=TIMESTAMP},</if>
+		<if test="islock!=null and islock!='' "> islock = #{islock,jdbcType=NUMERIC},</if>
+		<if test="isbomb!=null and isbomb!='' "> islock = #{isbomb,jdbcType=NUMERIC},</if>
+		<if test="updatetime!=null and updatetime!='' "> updatetime =#{updatetime,jdbcType=TIMESTAMP},</if>
+		<if test="device!=null and device!='' "> device = #{device,jdbcType=VARCHAR}</if>
+	</set>
+	where tokenid=#{tokenid}
+ </update>
+ 
+   <update id="updateObject" parameterType="java.util.Map">
+	update mobile_token
+	<set>
+		<if test="id!=null and id!='' "> id = #{id,jdbcType=VARCHAR},</if>
+		<if test="username!=null and username!='' "> username = #{username,jdbcType=VARCHAR},</if>
+		<if test="password!=null and password!='' "> password = #{password,jdbcType=VARCHAR},</if>
+		<if test="tokenid!=null and tokenid!='' "> tokenid = #{tokenid,jdbcType=VARCHAR},</if>
+		<if test="validtime!=null and validtime!=''"> validtime = #{validtime,jdbcType=TIMESTAMP},</if>
+		<if test="islock!=null and islock!='' "> islock = #{islock,jdbcType=NUMERIC},</if>
+		<if test="isbomb!=null and isbomb!='' "> islock = #{isbomb,jdbcType=NUMERIC},</if>
+		<if test="updatetime!=null and updatetime!='' "> updatetime =#{updatetime,jdbcType=TIMESTAMP},</if>
+		<if test="device!=null and device!='' "> device = #{device,jdbcType=VARCHAR}</if>
+	</set>
+	where tokenid=#{tokenid}
+ </update>
+
+	<delete id="delete" parameterType="java.util.Map">
+		delete from mobile_token
+		where tokenid=#{tokenid}
+	</delete>
+</mapper>

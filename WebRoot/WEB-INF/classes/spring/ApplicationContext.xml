@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop" 
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+	">
+	
+	<import resource="ApplicationContext-UploadFile.xml"/>
+		<!--  <import resource="ApplicationSpringTask.xml"/>-->
+		<!--  <import resource="mvc-context.xml"/>-->
+		
+ <!-- 
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+		<property name="username" value="root"/>
+		<property name="password" value="root"/>
+		<property name="url" value="jdbc:mysql://10.221.135.152:13306/systest?Unicode=true&amp;characterEncoding=UTF-8"/>
+	</bean>
+ -->	
+	
+		<!--加载配置文件-->
+	 <bean id="propertyConfigurer"     class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+           <property name="locations">
+               <list>
+                   <value>classpath:conf/app.properties</value>
+               </list>
+           </property>
+ 	</bean>
+    <bean id="dataSource" class="org.logicalcobwebs.proxool.ProxoolDataSource">  
+		<property name="driver" value="${jdbc.driverClassName}"/>
+		<property name="driverUrl" value="${jdbc.url}"/>
+		<property name="user" value="${jdbc.username}"/>
+		<property name="password" value="${jdbc.password}"/>
+		<property name="alias" value="${db.alias}"/>
+		<property name="simultaneousBuildThrottle" value="${db.simultaneousBuildThrottle}"/>
+		<property name="maximumActiveTime" value="${db.maximumActiveTime}"/>
+		<property name="houseKeepingTestSql" value="${db.houseKeepingTestSql}"/>
+		<property name="maximumConnectionCount" value="${db.maximumConnectionCount}"/>
+		<property name="minimumConnectionCount" value="${db.minimumConnectionCount}"/>
+		<property name="delegateProperties" value="characterEncoding=${db.characterEncoding}"/>
+	</bean>
+	
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"/>
+		<property name="configLocation" value="classpath:conf/config.xml"/>
+	</bean>
+	
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg index="0" ref="sqlSessionFactory"></constructor-arg>
+	</bean>
+	<bean id="serviceOtherDate" class="com.mobile.token.service.ServiceOtherDate">
+		<property name="jdbcTemplate" ref="jdbcTemplate" />
+	</bean>
+
+	<!--jdbcTemplate-->
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+   
+	<!-- 扫描 basePackage下所有的接口，根据对应的mapper.xml为其生成代理类-->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.manager.**.mapper,com.mobile.**.mapper" />
+	</bean>
+	
+	<bean name="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">   
+    	<property name="dataSource" ref="dataSource"></property>
+ 	</bean>
+	
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="delete*" propagation="REQUIRED" read-only="false" 
+			           rollback-for="java.lang.Exception"/>
+			<tx:method name="insert*" propagation="REQUIRED" read-only="false" 
+			           rollback-for="java.lang.Exception" />
+			<tx:method name="update*" propagation="REQUIRED" read-only="false" 
+			           rollback-for="java.lang.Exception" />
+			<tx:method name="save*" propagation="REQUIRED" read-only="false" 
+			           rollback-for="java.lang.Exception" />
+			<tx:method name="*" propagation="REQUIRED" read-only="true"/>
+		</tx:attributes>
+	</tx:advice>
+	
+	<aop:config>
+		<aop:pointcut id="pc" expression="execution(* com.manager.service..*(..))" />
+		<aop:advisor pointcut-ref="pc" advice-ref="txAdvice" />
+	</aop:config>
+	
+</beans>

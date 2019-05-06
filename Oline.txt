@@ -1,0 +1,6 @@
+1,安装 tomcat和jdk 
+2,修改tomcat的conf/server.xml 修改端口为8080
+3,修改文件映射地址在tomcat安装目录 conf/server.xml下 host标签下 增加 配置 <Context path="/online" docBase="E:\Temp\userInfoImage" />
+4,应用部署 
+5,应用登陆地址：http://localhost:8080/mobileVersionManger/login.html 
+用户名/密码 admin/1qazxsw2

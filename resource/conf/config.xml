@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD SQL Map Config 3.0//EN"  
+	"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<typeAliases>
+	    <!-- 管理界面 bean 实例化  -->
+		<typeAlias type="com.manager.entity.User" alias="User"/>
+		<typeAlias type="com.manager.entity.Page" alias="Page"/>
+		<typeAlias type="com.manager.entity.Role" alias="Role"/>
+		<typeAlias type="com.manager.entity.Menu" alias="Menu"/>
+		<typeAlias type="com.manager.entity.Info" alias="Info"/>
+		<!-- 接口  bean 实例化  -->
+		<typeAlias type="com.mobile.token.entity.Token" alias="Token"/>
+		<typeAlias type="com.mobile.appversion.entity.Version" alias="Version"/>
+	</typeAliases>
+	
+	<plugins>
+		<plugin interceptor="com.manager.plugin.PagePlugin">
+			<property name="dialect" value="mysql"/>
+			<property name="pageSqlId" value=".*listPage.*"/>
+		</plugin>
+	</plugins>
+	
+	<mappers>
+	  <!-- 管理界面 数据库  映射  -->
+		<mapper resource="com/managerMapper/User.xml"/>
+		<mapper resource="com/managerMapper/Role.xml"/>
+		<mapper resource="com/managerMapper/Menu.xml"/>
+		<mapper resource="com/managerMapper/Info.xml"/>
+		<!-- 接口  bean 数据库映射   -->
+		<mapper resource="com/mobileMapper/Token.xml"/>
+		<mapper resource="com/mobileMapper/Version.xml"/>
+	</mappers>
+	
+</configuration>

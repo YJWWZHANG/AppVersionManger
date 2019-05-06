@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mobile.appversion.mapper.VersionMapper">
+	<resultMap type="Version" id="versionResultMap">
+		<result property="appKey" column="appKey" jdbcType="VARCHAR" />
+		<result property="appName" column="appName" jdbcType="VARCHAR" />
+		<result property="version" column="version" jdbcType="VARCHAR" />
+		<result property="state" column="state" jdbcType="VARCHAR" />
+		<result property="applicationType" column="applicationType"
+			jdbcType="VARCHAR" />
+		<result property="updateTime" column="updateTime" jdbcType="TIMESTAMP" />
+		<result property="updatePackagePath" column="updatePackagePath"
+			jdbcType="VARCHAR" />
+		<result property="updateLog" column="updateLog" jdbcType="VARCHAR" />
+		<result property="appUrl" column="appUrl" jdbcType="VARCHAR" />
+		<result property="targetSize" column="targetSize" jdbcType="VARCHAR" />
+		<result property="constraints" column="constraints" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="columns">
+		appKey,appName,version,state,applicationType,updateTime,updatePackagePath,updateLog,appUrl,targetSize,constraint
+	</sql>
+	<select id="listAll" resultMap="versionResultMap">
+		select * from mobile_version
+	</select>
+
+	<select id="listAllAsc" resultMap="versionResultMap">
+		select * from mobile_version
+		<if test="updateTime!=null"> order by updateTime asc</if>
+	</select>
+
+	<select id="listAllDesc" resultMap="versionResultMap">
+		select * from mobile_version
+		<if test="validtime!=null"> order by validtime desc</if>
+	</select>
+
+	<select id="selectOne" resultMap="versionResultMap" parameterType="java.util.Map">
+		select * from mobile_version
+		<include refid="dynamicWhere"></include>
+	</select>
+	
+	<select id="getVersionInfo" resultMap="versionResultMap" parameterType="java.util.Map">
+		select * from mobile_version 
+		where 1=1 and 
+		<if test="android!=null and ios!=null ">
+		   appKey in(#{android},#{ios})
+		</if>
+	</select>
+
+	<insert id="add" parameterType="Version">
+		INSERT INTO mobile_version
+		(appKey,appName,version,state,applicationType,updateTime,updatePackagePath,updateLog,appUrl,targetSize,constraints)
+		VALUES
+		) VALUES
+		( #{appKey,jdbcType=VARCHAR},
+		#{appName,jdbcType=VARCHAR}, #{version,jdbcType=VARCHAR},
+		#{state,jdbcType=VARCHAR},#{applicationType,jdbcType=VARCHAR},
+		#{updateTime,jdbcType=VARCHAR}, #{updateLog,jdbcType=VARCHAR},
+		#{appUrl,jdbcType=VARCHAR}, #{targetSize,jdbcType=VARCHAR},
+		#{constraints,jdbcType=VARCHAR})
+	</insert>
+
+	<sql id="dynamicWhere">
+		<where>
+			<if test="appKey!=null"> AND appKey = #{appKey}  </if>
+			<if test="appName!=null"> AND appName = #{appName}  </if>
+			<if test="version!=null"> AND version = #{version}  </if>
+			<if test="state!=null"> AND state = #{state}  </if>
+			<if test="applicationType!=null"> AND applicationType =#{applicationType} </if>
+			<if test="updateTime!=null"> AND updateTime =#{updateTime} </if>
+			<if test="updatePackagePath!=null"> AND updatePackagePath = #{updatePackagePath}  </if>
+			<if test="updateLog!=null"> AND updateLog = #{updateLog}  </if>
+			<if test="appUrl!=null"> AND appUrl = #{appUrl}  </if>
+			<if test="targetSize!=null"> AND targetSize = #{targetSize}  </if>
+			<if test="constraints!=null"> AND constraints = #{constraints}  </if>
+		</where>
+	</sql>
+	<update id="update" parameterType="Version">
+		update mobile_version set
+		appName=#{appName,jdbcType=VARCHAR},
+		version=#{version,jdbcType=VARCHAR},
+		state=#{state,jdbcType=VARCHAR},
+		applicationType=#{applicationType,jdbcType=VARCHAR},
+		updateTime=#{updateTime,jdbcType=TIMESTAMP}, 
+		updatePackagePath=#{updatePackagePath,jdbcType=VARCHAR}, 
+		updateLog=#{updateLog,jdbcType=VARCHAR},
+		appUrl=#{appUrl,jdbcType=VARCHAR}, 
+		targetSize=#{targetSize,jdbcType=VARCHAR},
+		constraints=#{constraints,jdbcType=VARCHAR}
+		where appKey=#{appKey,jdbcType=VARCHAR}
+	</update>
+	
+   <update id="updateObject" parameterType="java.util.Map">
+	update mobile_version
+	<set>
+		<if test="targetSize!=null and targetSize!='' "> targetSize = #{targetSize,jdbcType=VARCHAR},</if>
+		<if test="version!=null and version!='' "> version = #{version,jdbcType=VARCHAR},</if>
+		<if test="updatePackagePath!=null and updatePackagePath!='' "> updatePackagePath = #{updatePackagePath,jdbcType=VARCHAR},</if>
+		<if test="updateTime!=null and updateTime!=''"> updateTime = #{updateTime,jdbcType=TIMESTAMP},</if>
+	</set>
+	where appKey=#{appKey}
+ </update>
+
+	<delete id="delete" parameterType="java.util.Map">
+		delete from mobile_version
+		where appKey=#{appKey}
+	</delete>
+</mapper>
